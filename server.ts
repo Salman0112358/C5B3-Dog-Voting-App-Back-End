@@ -57,24 +57,47 @@ app.get("/random" , async(req,res) => {
 
 
 ///// UPDATE VOTE COUNT FOR DOG  //////////////////////////////////////////////////////
-
-app.put("/random" , async(req,res) => {
+app.put("/dog/:id" , async(req,res) => {
 
   try {
 
-    const increaseDogVote = await client.query(`UPDATE dogs SET votes= votes + 1   `)
+    const {id} = req.params
+    const increaseDogVote = await client.query(`UPDATE dogs SET votes= votes + 1 WHERE dog_id = $1`, [id])
 
-//     UPDATE table_name
-// SET column1 = value1, column2 = value2, ...
-// WHERE condition;
+    res.json("The dog vote has been increased")
    
-
   } catch (error) {
     console.error(error.message);
     
   }
 })
 
+///// Add Single Dog to dogs table otherwise increase vote by 1   //////////////////////////////////////////////////////
+app.post("/dog", async(req,res) => {
+
+  try {
+
+    const {breed} = req.body;
+    const breedCheck = await client.query("SELECT * FROm dogs WHERE breed=$1",[breed])
+    if (breedCheck.rowCount === 1){
+
+      const increaseDogVote = await client.query("UPDATE dogs SET votes= votes + 1 WHERE breed = $1 ", [breed])
+      res.json("The dog breed vote has been increase")
+
+    } else {
+
+      await client.query("INSERT INTO dogs (breed) VALUES ($1)", [breed])
+
+      res.json("A new dog breed has been added")
+
+    }
+
+    
+
+  } catch (error) {
+    console.error(error.message);
+  }
+} )
 
 
 //Start the server on the given port
