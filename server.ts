@@ -34,7 +34,7 @@ app.get("/", async (req, res) => {
   res.json(allDogs.rows);
 });
 
-///// GET ALL DOGS//////////////////////////////////////////////////////
+///// GET TOP 10 DOGS//////////////////////////////////////////////////////
 app.get("/top10", async (req, res) => {
   const topTenDogs = await client.query('SELECT * FROM dogs ORDER BY votes DESC LIMIT 10');
   res.json(topTenDogs.rows);
@@ -47,7 +47,17 @@ app.get("/random" , async(req,res) => {
   try {
 
     const RandomDog = await axios.get("https://dog.ceo/api/breeds/image/random")
-    res.json(RandomDog.data);
+    //console.log(RandomDog.data.message.split("/"))
+
+    const perfectDog = {
+
+      breed : (RandomDog.data.message.split("/"))[4],
+      image : RandomDog.data.message
+
+    }
+
+    //console.log(perfectDog.breed, perfectDog.image);
+    res.json(perfectDog);
 
   } catch (error) {
     console.error(error.message);
@@ -60,7 +70,7 @@ app.post("/dog", async(req,res) => {
 
   try {
     const {breed} = req.body;
-    const breedCheck = await client.query("SELECT * FROm dogs WHERE breed=$1",[breed])
+    const breedCheck = await client.query("SELECT * FROM dogs WHERE breed=$1",[breed])
     if (breedCheck.rowCount === 1){
 
       const increaseDogVote = await client.query("UPDATE dogs SET votes= votes + 1 WHERE breed = $1 ", [breed])
