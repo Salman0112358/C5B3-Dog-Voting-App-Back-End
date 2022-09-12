@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import express from "express";
 import cors from "cors";
 
+
 config(); //Read .env file lines as though they were env vars.
 
 //Call this script with the environment variable LOCAL set if you want to connect to a local db (i.e. without SSL)
@@ -27,9 +28,12 @@ const client = new Client(dbConfig);
 client.connect();
 
 app.get("/", async (req, res) => {
-  const dbres = await client.query('select * from categories');
-  res.json(dbres.rows);
+  const allDogs = await client.query('SELECT * FROM dogs');
+  res.json(allDogs.rows);
 });
+
+
+
 
 
 //Start the server on the given port
