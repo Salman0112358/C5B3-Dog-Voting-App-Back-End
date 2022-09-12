@@ -2,6 +2,7 @@ import { Client } from "pg";
 import { config } from "dotenv";
 import express from "express";
 import cors from "cors";
+import axios from "axios";
 
 
 config(); //Read .env file lines as though they were env vars.
@@ -27,12 +28,52 @@ app.use(cors()) //add CORS support to each following route handler
 const client = new Client(dbConfig);
 client.connect();
 
+///// GET ALL DOGS//////////////////////////////////////////////////////
 app.get("/", async (req, res) => {
   const allDogs = await client.query('SELECT * FROM dogs');
   res.json(allDogs.rows);
 });
 
+///// GET ALL DOGS//////////////////////////////////////////////////////
+app.get("/top10", async (req, res) => {
+  const topTenDogs = await client.query('SELECT * FROM dogs ORDER BY votes DESC LIMIT 10');
+  res.json(topTenDogs.rows);
+});
 
+
+///// GET SINGLE RANDOM DOG //////////////////////////////////////////////////////
+app.get("/random" , async(req,res) => {
+
+  try {
+
+    const RandomDog = await axios.get("https://dog.ceo/api/breeds/image/random")
+    res.json(RandomDog.data);
+
+  } catch (error) {
+    console.error(error.message);
+    
+  }
+})
+
+
+///// UPDATE VOTE COUNT FOR DOG  //////////////////////////////////////////////////////
+
+app.put("/random" , async(req,res) => {
+
+  try {
+
+    const increaseDogVote = await client.query(`UPDATE dogs SET votes= votes + 1   `)
+
+//     UPDATE table_name
+// SET column1 = value1, column2 = value2, ...
+// WHERE condition;
+   
+
+  } catch (error) {
+    console.error(error.message);
+    
+  }
+})
 
 
 
