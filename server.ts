@@ -55,28 +55,10 @@ app.get("/random" , async(req,res) => {
   }
 })
 
-
-///// UPDATE VOTE COUNT FOR DOG  //////////////////////////////////////////////////////
-app.put("/dog/:id" , async(req,res) => {
-
-  try {
-
-    const {id} = req.params
-    const increaseDogVote = await client.query(`UPDATE dogs SET votes= votes + 1 WHERE dog_id = $1`, [id])
-
-    res.json("The dog vote has been increased")
-   
-  } catch (error) {
-    console.error(error.message);
-    
-  }
-})
-
 ///// Add Single Dog to dogs table otherwise increase vote by 1   //////////////////////////////////////////////////////
 app.post("/dog", async(req,res) => {
 
   try {
-
     const {breed} = req.body;
     const breedCheck = await client.query("SELECT * FROm dogs WHERE breed=$1",[breed])
     if (breedCheck.rowCount === 1){
@@ -85,15 +67,13 @@ app.post("/dog", async(req,res) => {
       res.json("The dog breed vote has been increase")
 
     } else {
+      const dogImage = (await axios.get(`https://dog.ceo/api/breed/${breed}/images/random`)).data.message
 
-      await client.query("INSERT INTO dogs (breed) VALUES ($1)", [breed])
-
+      await client.query("INSERT INTO dogs (breed,image) VALUES ($1, $2)" , [breed, dogImage])
+    
       res.json("A new dog breed has been added")
 
     }
-
-    
-
   } catch (error) {
     console.error(error.message);
   }
