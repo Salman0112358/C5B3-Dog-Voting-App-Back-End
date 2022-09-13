@@ -61,6 +61,27 @@ app.get("/random", async (req, res) => {
   }
 });
 
+///// GET SINGLE RANDOM DOG FOR SPECIFIED BREED  //////////////////////////////////////////////////////
+
+app.get("/random/breed", async (req, res) => {
+  try {
+    const { breed } = req.body;
+
+    const RandomDog = await axios.get(
+      `https://dog.ceo/api/breed/${breed}/images/random`
+    );
+
+    const perfectDog = {
+      breed: RandomDog.data.message.split("/")[4],
+      image: RandomDog.data.message,
+    };
+
+    res.json(perfectDog);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 ///// Add Single Dog to dogs table otherwise increase vote by 1   //////////////////////////////////////////////////////
 app.post("/dog", async (req, res) => {
   try {
@@ -86,7 +107,9 @@ app.post("/dog", async (req, res) => {
         res.json("The dog breed vote has been increased");
       } else {
         const dogImage = (
-          await axios.get(`https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`)
+          await axios.get(
+            `https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`
+          )
         ).data.message;
 
         //https://dog.ceo/api/breed/hound/afghan/images/random
@@ -132,26 +155,20 @@ app.post("/dog", async (req, res) => {
 
 ///// Get SUM for total dog votes  //////////////////////////////////////////////////////
 
-app.get("/totalVotes", async (req,res) => {
+app.get("/totalVotes", async (req, res) => {
+  const voteSum = await client.query("SELECT SUM(votes) FROM dogs");
 
-  const voteSum = await client.query("SELECT SUM(votes) FROM dogs")
-
- try {
-  const totalVotesObject = {
-    totalVotes : voteSum.rows[0].sum
-}
-console.log(totalVotesObject)
-res.json(totalVotesObject)
-res.status(202)
-  
- } catch (error) {
-  console.error(error.message)
-  
- }
-})
-
-
-
+  try {
+    const totalVotesObject = {
+      totalVotes: voteSum.rows[0].sum,
+    };
+    console.log(totalVotesObject);
+    res.json(totalVotesObject);
+    res.status(202);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
 
 //Start the server on the given port
 const port = process.env.PORT;
