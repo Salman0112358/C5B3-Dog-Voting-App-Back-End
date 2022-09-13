@@ -86,6 +86,7 @@ app.post("/dog", async(req,res) => {
 
     }
   } catch (error) {
+    res.status(404)
     console.error(error.message);
   }
 } )
