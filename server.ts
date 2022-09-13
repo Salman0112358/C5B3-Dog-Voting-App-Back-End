@@ -81,6 +81,7 @@ app.post("/dog", async(req,res) => {
 
       await client.query("INSERT INTO dogs (breed,image) VALUES ($1, $2)" , [breed, dogImage])
     
+      res.status(420)
       res.json("A new dog breed has been added")
 
     }
