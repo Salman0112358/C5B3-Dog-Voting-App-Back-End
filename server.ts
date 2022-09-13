@@ -83,7 +83,7 @@ app.post("/dog", async (req, res) => {
           "UPDATE dogs SET votes= votes + 1 WHERE breed = $1 ",
           [breed]
         );
-        res.json("The dog breed vote has been increase");
+        res.json("The dog breed vote has been increased");
       } else {
         const dogImage = (
           await axios.get(`https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`)
