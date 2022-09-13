@@ -63,14 +63,13 @@ app.get("/random", async (req, res) => {
 
 ///// GET SINGLE RANDOM DOG FOR SPECIFIED BREED  //////////////////////////////////////////////////////
 
-app.get("/random/breed", async (req, res) => {
+app.get("/random/:id", async (req, res) => {
   try {
-    const { breed } = req.body;
+    const {id} = req.params;
 
     const RandomDog = await axios.get(
-      `https://dog.ceo/api/breed/${breed}/images/random`
+      `https://dog.ceo/api/breed/${id}/images/random`
     );
-
     const perfectDog = {
       breed: RandomDog.data.message.split("/")[4],
       image: RandomDog.data.message,
@@ -154,7 +153,6 @@ app.post("/dog", async (req, res) => {
 });
 
 ///// Get SUM for total dog votes  //////////////////////////////////////////////////////
-
 app.get("/totalVotes", async (req, res) => {
   const voteSum = await client.query("SELECT SUM(votes) FROM dogs");
 
