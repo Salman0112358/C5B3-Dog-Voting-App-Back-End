@@ -68,7 +68,8 @@ app.post("/dog", async (req, res) => {
     //hound-ddfdsfs
     if (breed.indexOf("-") > -1) {
       const splitBreed = breed.split("-"); //hound-ddfdsfs
-      const subBreed = splitBreed[1]; //ddfdsfs
+      const mainBreed = splitBreed[0]; //hound
+      const subBreed = splitBreed[1];
 
       console.log("sub breed detected");
 
@@ -85,8 +86,10 @@ app.post("/dog", async (req, res) => {
         res.json("The dog breed vote has been increase");
       } else {
         const dogImage = (
-          await axios.get(`https://dog.ceo/api/breed/${subBreed}/images/random`)
+          await axios.get(`https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`)
         ).data.message;
+
+        //https://dog.ceo/api/breed/hound/afghan/images/random
 
         await client.query("INSERT INTO dogs (breed,image) VALUES ($1, $2)", [
           breed,
