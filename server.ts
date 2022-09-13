@@ -130,6 +130,17 @@ app.post("/dog", async (req, res) => {
   }
 });
 
+///// Get SUM for total dog votes  //////////////////////////////////////////////////////
+
+app.get("/totalVotes", async (req,res) => {
+
+  const totalVotes = await client.query("SELECT SUM(votes) FROM dogs")
+  res.json(totalVotes)
+})
+
+
+
+
 //Start the server on the given port
 const port = process.env.PORT;
 if (!port) {
