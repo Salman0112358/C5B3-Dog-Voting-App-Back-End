@@ -134,8 +134,20 @@ app.post("/dog", async (req, res) => {
 
 app.get("/totalVotes", async (req,res) => {
 
-  const totalVotes = await client.query("SELECT SUM(votes) FROM dogs")
-  res.json(totalVotes)
+  const voteSum = await client.query("SELECT SUM(votes) FROM dogs")
+
+ try {
+  const totalVotesObject = {
+    totalVotes : voteSum.rows[0].sum
+}
+console.log(totalVotesObject)
+res.json(totalVotesObject)
+res.status(202)
+  
+ } catch (error) {
+  console.error(error.message)
+  
+ }
 })
 
 
