@@ -36,7 +36,7 @@ app.get("/", async (req, res) => {
 ///// GET TOP 10 DOGS//////////////////////////////////////////////////////
 app.get("/top10", async (req, res) => {
   const topTenDogs = await client.query(
-    "SELECT * FROM dogs ORDER BY votes DESC LIMIT 10"
+    "SELECT * FROM dogs ORDER BY votes DESC, breed ASC LIMIT 10"
   );
   res.json(topTenDogs.rows);
 });
