@@ -20,12 +20,18 @@ const dbConfig = {
 };
 
 const app = express();
+const http = require("http").Server(app)
+
 
 app.use(express.json()); //add body parser to each following route handler
 app.use(cors()); //add CORS support to each following route handler
 
+
 const client = new Client(dbConfig);
 client.connect();
+const io = require('socket.io')(http);
+io.on("connection", (socket: any) => console.log("user has connected", socket) )
+
 
 ///// GET ALL DOGS//////////////////////////////////////////////////////
 app.get("/", async (req, res) => {
@@ -196,6 +202,13 @@ const port = process.env.PORT;
 if (!port) {
   throw "Missing PORT environment variable.  Set it in .env file.";
 }
-app.listen(port, () => {
-  console.log(`Server is up and running on port ${port}`);
-});
+
+http.listen(port, () => {
+  console.log("hello world")
+})
+
+// socket io connection
+
+io.on('connection', (socket: any) => {
+  console.log('User connected' + socket.id)
+})
