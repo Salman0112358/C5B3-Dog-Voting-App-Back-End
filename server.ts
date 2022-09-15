@@ -67,15 +67,38 @@ app.get("/random/:id", async (req, res) => {
   try {
     const {id} = req.params;
 
-    const RandomDog = await axios.get(
-      `https://dog.ceo/api/breed/${id}/images/random`
-    );
-    const perfectDog = {
-      breed: RandomDog.data.message.split("/")[4],
-      image: RandomDog.data.message,
-    };
 
-    res.json(perfectDog);
+    if (id.indexOf("-") > -1) {
+      const splitBreed = id.split("-"); //hound-ddfdsfs
+      const mainBreed = splitBreed[0]; //hound
+      const subBreed = splitBreed[1];
+
+      console.log(mainBreed, subBreed)
+      const RandomDog = await axios.get(
+        `https://dog.ceo/api/breed/${mainBreed}/${subBreed}/images/random`
+      );
+      const perfectDog = {
+        breed: RandomDog.data.message.split("/")[4],
+        image: RandomDog.data.message,
+      };
+
+      res.json(perfectDog);
+
+    } else {
+
+      const RandomDog = await axios.get(
+        `https://dog.ceo/api/breed/${id}/images/random`
+      );
+      const perfectDog = {
+        breed: RandomDog.data.message.split("/")[4],
+        image: RandomDog.data.message,
+      };
+      
+      console.log("random iamge for breed found")
+      res.json(perfectDog);
+
+    }
+   
   } catch (error) {
     console.error(error.message);
   }
