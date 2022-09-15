@@ -30,7 +30,20 @@ app.use(cors()); //add CORS support to each following route handler
 const client = new Client(dbConfig);
 client.connect();
 const io = require('socket.io')(http);
-io.on("connection", (socket: any) => console.log("user has connected", socket) )
+
+
+//Whenever someone connects this gets executed
+io.on('connection', function(socket : any) {
+  console.log('A user connected');
+
+  //Whenever someone disconnects this piece of code executed
+  socket.on('disconnect', function () {
+     console.log('A user disconnected');
+  });
+
+  io.emit("hello","salman")
+});
+
 
 
 ///// GET ALL DOGS//////////////////////////////////////////////////////
