@@ -20,31 +20,34 @@ const dbConfig = {
 };
 
 const app = express();
+app.use(cors());
 const http = require("http").Server(app)
 
 
 app.use(express.json()); //add body parser to each following route handler
-app.use(cors()); //add CORS support to each following route handler
+ //add CORS support to each following route handler
 
 
 const client = new Client(dbConfig);
 client.connect();
-const io = require('socket.io')(http);
+const io = require('socket.io')(http , {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+} );
 
 
 //Whenever someone connects this gets executed
 io.on('connection', function(socket : any) {
-  console.log('A user connected');
+  console.log('A user connected' , new Date ());
 
   //Whenever someone disconnects this piece of code executed
-  socket.on('disconnect', function () {
-     console.log('A user disconnected');
-  });
+    socket.on('disconnect', function () {
+        console.log('A user disconnected');
+      });
 
-  io.emit("hello","salman")
 });
-
-
 
 ///// GET ALL DOGS//////////////////////////////////////////////////////
 app.get("/", async (req, res) => {
@@ -120,11 +123,13 @@ app.get("/random/:id", async (req, res) => {
    
   } catch (error) {
     console.error(error.message);
+    //send response to client
   }
 });
 
 ///// Add Single Dog to dogs table otherwise increase vote by 1   //////////////////////////////////////////////////////
 app.post("/dog", async (req, res) => {
+  console.log("Are we posting here");
   try {
     const { breed } = req.body;
     //hound-ddfdsfs
@@ -146,6 +151,8 @@ app.post("/dog", async (req, res) => {
           [breed]
         );
         res.json("The dog breed vote has been increased");
+       
+        console.log("I sent a chat message because of voting");
       } else {
         const dogImage = (
           await axios.get(
@@ -160,6 +167,7 @@ app.post("/dog", async (req, res) => {
           dogImage,
         ]);
 
+        
         res.status(285);
         res.json("A new dog breed has been added");
       }
@@ -192,6 +200,11 @@ app.post("/dog", async (req, res) => {
     res.status(404);
     console.error(error.message);
   }
+
+  
+  const updatedLeaderboard = (await (client.query("SELECT * FROM dogs ORDER BY votes DESC, breed ASC LIMIT 10"))).rows
+
+  io.emit("chatMessage", updatedLeaderboard );
 });
 
 ///// Get SUM for total dog votes  //////////////////////////////////////////////////////
@@ -218,10 +231,4 @@ if (!port) {
 
 http.listen(port, () => {
   console.log("hello world")
-})
-
-// socket io connection
-
-io.on('connection', (socket: any) => {
-  console.log('User connected' + socket.id)
 })
