@@ -215,7 +215,6 @@ app.get("/totalVotes", async (req, res) => {
     const totalVotesObject = {
       totalVotes: voteSum.rows[0].sum,
     };
-    console.log(totalVotesObject);
     res.json(totalVotesObject);
     res.status(202);
   } catch (error) {
@@ -230,5 +229,5 @@ if (!port) {
 }
 
 http.listen(port, () => {
-  console.log("hello world")
+  console.log("hello world the server is listening")
 })
